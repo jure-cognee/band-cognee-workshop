@@ -12,7 +12,10 @@ import cognee
 from cognee import SearchType
 from cognee.modules.users.exceptions import PermissionDeniedError
 from cognee.modules.users.methods import create_user, get_default_user, get_user, get_user_id_by_email
-from cognee.modules.users.permissions.methods import authorized_give_permission_on_datasets
+from cognee.modules.users.permissions.methods import (
+    authorized_give_permission_on_datasets,
+    authorized_revoke_permission_on_datasets,
+)
 
 DATASET = "checkout_v2"  # the same name in every block
 SECOND_USER = "agent-b@example.com"
@@ -40,6 +43,9 @@ async def main() -> None:
     user_id = await get_user_id_by_email(SECOND_USER)  # it exists if you ran this block before
     agent_b = await get_user(user_id) if user_id else await create_user(SECOND_USER, "workshop-pass")
     print(f"[permissions] Owner: {owner.email}   Second user: {agent_b.email}")
+
+    # Start clean, so this block works the same every time you run it.
+    await authorized_revoke_permission_on_datasets(agent_b.id, [dataset.id], "read", owner.id)
 
     print(f"\n[permissions] {agent_b.email} asks before any permission: {QUESTION}")
     await ask(agent_b, dataset.id)
