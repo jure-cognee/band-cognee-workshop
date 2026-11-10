@@ -1,0 +1,11 @@
+Subject: 3DS2 required for card payments
+From: Kestrel Bank Merchant Services <merchants@kestrel.example>
+To: Lena Fischer <lena@acorn.example>
+Date: 2026-11-05
+
+Dear merchant,
+
+From 2026-12-10, every card payment must use 3DS2. Payments that still use 3-D Secure 1
+after that date will be declined.
+
+Kestrel Bank Merchant Services
