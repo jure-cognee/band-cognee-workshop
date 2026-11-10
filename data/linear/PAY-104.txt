@@ -1,0 +1,8 @@
+Linear issue PAY-104: Migrate card payments to 3DS2
+Status: In Progress
+Team: Payments
+Project: Checkout v2
+Assignee: Omar Haddad
+Due: none
+
+Card payments still go through the 3-D Secure 1 flow. Move them to 3DS2. Updated 2026-11-07.

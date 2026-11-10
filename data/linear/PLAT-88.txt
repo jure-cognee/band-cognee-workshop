@@ -1,0 +1,8 @@
+Linear issue PLAT-88: Load-test the checkout API
+Status: Todo
+Team: Platform
+Project: Checkout v2
+Assignee: Sam Okoro
+Due: 2026-11-20
+
+Run a load test against the checkout API at three times peak traffic.
