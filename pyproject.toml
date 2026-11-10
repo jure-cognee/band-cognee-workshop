@@ -1,0 +1,6 @@
+[project]
+name = "band-cognee-workshop"
+version = "0.1.0"
+description = "Workshop: Cognee memory, step by step, then shared between BAND agents."
+requires-python = ">=3.11,<3.13"
+dependencies = ["cognee==1.6.6"]

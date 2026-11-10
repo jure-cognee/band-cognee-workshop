@@ -1,0 +1,10 @@
+.env
+.venv/
+__pycache__/
+.cognee_system/
+.data_storage/
+*.html
+runs/
+.DS_Store
+HANDOVER.md
+STATUS.md
