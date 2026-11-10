@@ -1,0 +1,10 @@
+Call: Checkout v2 launch readiness
+Date: 2026-11-10
+Attendees: Lena Fischer, Omar Haddad, Sam Okoro
+
+The team reviewed what has to happen before checkout v2 goes live.
+
+Lena Fischer: What's blocking launch?
+Omar Haddad: Card payments still use the old 3-D Secure flow. I'll migrate them to 3DS2.
+Sam Okoro: I'll load-test the checkout API at three times peak traffic.
+Lena Fischer: And I'll write the launch announcement once both are done.

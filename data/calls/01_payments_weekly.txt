@@ -1,0 +1,9 @@
+Call: Payments weekly
+Date: 2026-10-23
+Attendees: Lena Fischer, Omar Haddad, Sam Okoro
+
+Lena Fischer leads the Payments team. Omar Haddad, on the Payments team, owns card
+processing. Sam Okoro joined from the Platform team to talk about checkout capacity.
+
+Lena Fischer: Omar, card processing stays with you through the checkout v2 launch.
+Sam Okoro: Platform can run the load tests once the API is frozen.
