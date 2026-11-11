@@ -227,14 +227,10 @@ await authorized_give_permission_on_datasets(agent_b.id, [dataset.id], "read", o
 mentioning it with `@`. BAND does not run your agent: the agent is a small program on
 your machine that connects to BAND.
 
-On its own, a BAND agent forgets everything when a room ends. One line gives it the
-memory you built in steps 1 to 5:
+On its own, a BAND agent forgets everything when a room ends. This step gives two agents
+the memory you built in steps 1 to 5.
 
-```python
-adapter=CogneeMemoryAdapter(inner)   # was: adapter=inner
-```
-
-Run one command. It works in one terminal window, next to your browser:
+Run this one command, in the same terminal window you used for steps 1 to 5:
 
 ```bash
 uv run python 06_band.py
@@ -314,6 +310,7 @@ ends or the agent stops it moves that room into the graph. It comes from
 | Anything fails in step 0 | Paste the one line from step 0 again. It continues where it stopped |
 | `uv` is not recognized, or `command not found: uv` | Close the terminal, open a new one, and paste the one line from step 0 again |
 | You are not in the workshop folder (`can't open file`, `No such file`) | `cd band-cognee-workshop`, then run the command again |
+| `can't open file ... 06_band.py` (or another file from this page is missing) | Your copy of the workshop is older than this page. Paste the one line from step 0 again. It updates your copy and keeps your key |
 | `Could not find lbug C API shared library` (macOS) | `brew install openssl@3`, then `uv run python reset.py`, then step 1 again |
 | `no such table: principals` | `uv run python reset.py`, then step 1 again |
 | `Could not download Node.js 22` | Check your internet connection and run step 2 again. Or install Node.js 22 from https://nodejs.org/en/download, open a new terminal, then step 2 again |
