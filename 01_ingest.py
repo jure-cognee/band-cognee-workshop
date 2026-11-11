@@ -4,6 +4,8 @@ Run: uv run python 01_ingest.py
 """
 
 import asyncio
+import contextlib
+import io
 import os
 from pathlib import Path
 
@@ -11,6 +13,8 @@ os.environ.setdefault("LOG_LEVEL", "ERROR")  # keep Cognee's logs quiet
 
 import cognee
 from cognee.modules.engine.operations.setup import setup
+
+from workshop import wait_note
 
 DATASET = "checkout_v2"  # the same name in every block
 DATA = Path(__file__).parent / "data"
@@ -32,9 +36,11 @@ async def main() -> None:
     print("[ingest] The extraction prompt Cognee will use:\n")
     print(EXTRACTION_PROMPT)
     print()
+    wait_note("ingest")
 
     # Start from an empty dataset, so running this block twice gives the same result.
-    await setup()
+    with contextlib.redirect_stdout(io.StringIO()):  # hide Cognee's "table already exists" notes
+        await setup()
     existing = {dataset.name for dataset in await cognee.datasets.list_datasets()}
     if DATASET in existing:
         await cognee.forget(dataset=DATASET)
@@ -52,7 +58,8 @@ async def main() -> None:
         )
         print(f"[ingest] Remembered {len(texts)} file(s) from data/{source}/")
 
-    print("[ingest] Done. Next: uv run python 02_graph.py")
+    print("[ingest] Done.")
+    print("Next: uv run python 02_graph.py")
 
 
 asyncio.run(main())

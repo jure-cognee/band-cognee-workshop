@@ -32,7 +32,7 @@ flowchart LR
 | 3 | An agent asks questions | An answer that joins a call, Linear and an email |
 | 4 | Feedback, then improve | The same question, a new answer |
 | 5 | Permissions | A second user: no access, then access |
-| 6 | Two BAND agents | Agent B knows what agent A was told |
+| 6 | Connect two BAND agents | Agent B knows what agent A was told |
 
 ## Step 0: Install
 
@@ -117,11 +117,8 @@ await cognee.remember(
 uv run python 02_graph.py
 ```
 
-Wait for this line (the first run downloads the UI, so it takes longer):
-
-```text
-[graph] Open http://localhost:3000 and click Sign in (the login is already filled in).
-```
+The first run downloads the UI, so it takes a minute or two. Wait for the box that says
+**The graph is ready**. Lines that start with `[frontend]` are normal.
 
 1. Open http://localhost:3000 in your browser.
 2. Click **Sign in**. The email and password are already filled in. It is Cognee's local
@@ -142,7 +139,8 @@ Wait for this line (the first run downloads the UI, so it takes longer):
 **What to notice.** Omar's team comes from the old call. PAY-104 comes from Linear. The
 deadline comes from the email. Nobody linked these by hand.
 
-Press **Ctrl+C** in the terminal to stop the UI before the next step.
+**Stop it before the next step.** This step does not end by itself. Click the terminal
+window and press **Ctrl+C**. It then prints the command for step 3.
 
 ## Step 3: An agent uses the memory
 
@@ -236,131 +234,55 @@ memory you built in steps 1 to 5:
 adapter=CogneeMemoryAdapter(inner)   # was: adapter=inner
 ```
 
-You need three terminals for this step.
+Run one command. It works in one terminal window, next to your browser:
 
-### 6.1 Create two agents in BAND
+```bash
+uv run python 06_band.py
+```
 
-1. Open https://app.band.ai and sign in. If you have no account, click
-   **Create account**.
-2. Click **Agents** in the left menu, then **Connect remote agent**.
-3. **Agent name**: `Cognee Agent A`. **Description**: `Answers questions about the
-   Checkout v2 project.` Leave everything else as it is. Click **Connect Agent**.
-4. BAND shows an **ID** and an **API Key**. Copy both now. The API key is shown only once.
-5. Do the same again for `Cognee Agent B`.
+It guides you through three parts. You never edit a file.
+
+**Part 1: make two agents in BAND.** It tells you where to click in
+https://app.band.ai, then asks you to paste the ID and the API key of each agent.
 
 ![Two agents in BAND](images/06_band_agents.jpg)
 
-Open `.env` and fill in these four lines with what you copied:
+**Part 2: it starts everything.** The Cognee server and both agents start in the
+background. You wait until it says both agents are online. The first time takes a few
+minutes.
 
-```text
-BAND_AGENT_A_ID=...
-BAND_AGENT_A_API_KEY=band_a_...
-BAND_AGENT_B_ID=...
-BAND_AGENT_B_API_KEY=band_a_...
-```
+**Part 3: you talk to the agents in BAND.** It shows you what to type:
 
-### 6.2 Start the Cognee server (terminal 1)
+1. Make a room with **Cognee Agent A** and ask it about the Checkout v2 call. It answers
+   from the memory you built, with the date you fixed in step 4.
 
-```bash
-uv run python 06_server.py
-```
+   ![Agent A answers from Cognee memory](images/06_band_room_a.jpg)
 
-You should see this. Leave it running.
+2. Tell agent A a new fact, then press Enter in the terminal. Agent A is switched off,
+   and its room moves into the shared memory.
+3. Make a new room with **Cognee Agent B** and ask about that fact.
 
-```text
-[server] Cognee server on http://localhost:8000. Leave this running.
-```
-
-### 6.3 Get a key for that server (terminal 2)
-
-```bash
-uv run python 06_api_key.py
-```
-
-You should see:
-
-```text
-[api-key] Saved COGNEE_API_KEY in .env
-```
-
-Optional: check the memory path without BAND. It takes about 15 seconds.
-
-```bash
-uv run --env-file .env 06_check_memory.py
-```
-
-```text
-[check] Room 2, agent B's memory has it after 12 seconds.
-```
-
-### 6.4 Start the two agents (terminals 2 and 3)
-
-Terminal 2:
-
-```bash
-uv run --env-file .env 06_band_agent.py a
-```
-
-Terminal 3:
-
-```bash
-uv run --env-file .env 06_band_agent.py b
-```
-
-Each one is ready when its last line says:
-
-```text
-... band.agent: Agent started: Cognee Agent A (band-sdk ...)
-```
-
-### 6.5 Ask agent A in a room
-
-1. In BAND, click **Rooms** in the left menu, then **New room** (the **+**).
-2. Select **Cognee Agent A** and click **Create room**.
-
-   ![Create a room with one agent](images/06_band_create_room.jpg)
-
-3. In the message box, type `@` and pick **Cognee Agent A**. An agent only receives
-   messages that mention it. Then type this and press Enter:
-
-   ```text
-   what are the next steps from the Checkout v2 launch readiness call? Give owner, team, due date and Linear issue for each.
-   ```
-
-Agent A answers from the memory you built, with the date you fixed in step 4:
-
-![Agent A answers from Cognee memory](images/06_band_room_a.jpg)
-
-### 6.6 Tell agent A something new
-
-In the same room, type `@`, pick **Cognee Agent A**, and send:
-
-```text
-new fact for the team: Lena Fischer finished the first draft of the Checkout v2 launch announcement today. It is waiting for review by Omar Haddad.
-```
-
-Agent A confirms it.
-
-### 6.7 Stop agent A
-
-Go to terminal 2 and press **Ctrl+C**. When an agent stops, the integration moves its
-rooms into the graph. Wait about one minute.
-
-### 6.8 Ask agent B in a new room
-
-1. Click **New room** again. This time select **Cognee Agent B**. Click **Create room**.
-2. Type `@`, pick **Cognee Agent B**, and send:
-
-   ```text
-   is the Checkout v2 launch announcement written yet, and who has to review it?
-   ```
-
-![Agent B knows what agent A was told](images/06_band_room_b.jpg)
+   ![Agent B knows what agent A was told](images/06_band_room_b.jpg)
 
 **What to notice.** Agent B was never in the first room, and agent A is not even running.
 Agent B knows because both agents read and write the same Cognee memory.
 
-When you are done, press **Ctrl+C** in terminals 3 and 1.
+Press Enter one last time and everything is switched off.
+
+### Step 6 by hand (optional)
+
+`06_band.py` runs three programs for you. To see them yourself, use three terminal
+windows in the workshop folder. Each one prints what to do next.
+
+| Window | Run | What it is |
+|---|---|---|
+| 1 | `uv run python 06_server.py` | The Cognee server. Leave it open |
+| 2 | `uv run python 06_api_key.py`, then `uv run --env-file .env 06_band_agent.py a` | A key for the server, then agent A |
+| 3 | `uv run --env-file .env 06_band_agent.py b` | Agent B |
+
+Run `06_band.py` once first, so your BAND agents are saved. To switch agent A off by hand,
+press Ctrl+C in window 2. To check the memory path without BAND:
+`uv run --env-file .env 06_check_memory.py`.
 
 ## What the BAND agent looks like
 
@@ -396,11 +318,11 @@ ends or the agent stops it moves that room into the graph. It comes from
 | `no such table: principals` | `uv run python reset.py`, then step 1 again |
 | `Could not download Node.js 22` | Check your internet connection and run step 2 again. Or install Node.js 22 from https://nodejs.org/en/download, open a new terminal, then step 2 again |
 | The page at localhost:3000 says "Internal Server Error" | The UI is running on the wrong Node.js. Stop it with Ctrl+C and run step 2 again |
-| Step 2 or 6.2: `Address already in use` | Something else uses port 8000 or 3000. Stop step 2 with Ctrl+C before step 6, and the other way round |
-| Step 6.4: `UnauthorizedError` | The BAND id or API key in `.env` is wrong. In BAND, open the agent's menu, choose **Regenerate API key**, and put the new key in `.env` |
-| Step 6.4: `KeyError: 'LLM_API_KEY'` or `'BAND_AGENT_A_ID'` | Start the agent with `uv run --env-file .env ...`, and check that line in `.env` |
+| Step 2 or 6: `Address already in use`, or `already running on port 8000` | Step 2 is still open in another window. Click that window, press Ctrl+C, then run the step again |
+| Step 6: an agent `stopped by itself` with `UnauthorizedError` | The BAND ID or API key is wrong. In BAND, open the agent's menu, choose **Regenerate API key**. Run `uv run python 06_band.py` again, answer `n` to "Use them?", and paste the new values |
+| Step 6: an agent `stopped by itself` for another reason | Read the lines it shows from `runs/`. Then run `uv run python 06_band.py` again |
 | The agent does not answer in the room | Your message must mention it. Type `@` and pick the agent from the list |
-| Agent B does not know the new fact | Wait a minute and ask again in a new room. Check that you stopped agent A with Ctrl+C |
+| Agent B does not know the new fact | Wait a minute and ask again in a new room |
 | You want to start over | Run step 1 again. It clears the dataset first. For a full reset: `uv run python reset.py` |
 
 ## Files
@@ -409,7 +331,9 @@ ends or the agent stops it moves that room into the graph. It comes from
 |---|---|
 | `data/` | The five sample files |
 | `00_check.py` to `05_permissions.py` | Steps 0 to 5, one file each |
-| `06_server.py`, `06_api_key.py`, `06_band_agent.py` | Step 6 |
+| `06_band.py` | Step 6, guided, in one terminal |
+| `06_server.py`, `06_api_key.py`, `06_band_agent.py` | The three programs that `06_band.py` runs for you |
+| `workshop.py` | The messages that tell you what to do next |
 | `06_check_memory.py` | Step 6 without BAND, to test the setup |
 | `install.ps1`, `install.sh` | Step 0 in one line: get the workshop and run the setup |
 | `setup.ps1`, `setup.sh` | The setup itself. The installer runs it for you |

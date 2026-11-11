@@ -14,6 +14,8 @@ from cognee import SearchType
 
 litellm.suppress_debug_info = True  # keep the LLM library quiet too
 
+from workshop import wait_note
+
 DATASET = "checkout_v2"  # the same name in every block
 SESSION = "workshop_session"  # the same name in block 04
 
@@ -26,6 +28,7 @@ QUESTIONS = [
 
 
 async def main() -> None:
+    wait_note("agent", "up to a minute")
     for question in QUESTIONS:
         results = await cognee.recall(
             question,
@@ -37,7 +40,7 @@ async def main() -> None:
         print(f"[agent] A: {results[0].text if results else '(nothing found)'}")
 
     print("\n[agent] The call itself never names a team, a date or an issue id.")
-    print("[agent] Next: uv run python 04_feedback_improve.py")
+    print("Next: uv run python 04_feedback_improve.py")
 
 
 asyncio.run(main())

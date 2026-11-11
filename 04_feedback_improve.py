@@ -9,7 +9,12 @@ import os
 os.environ.setdefault("LOG_LEVEL", "ERROR")  # keep Cognee's logs quiet
 
 import cognee
+import litellm
 from cognee import SearchType
+
+from workshop import wait_note
+
+litellm.suppress_debug_info = True  # keep the LLM library quiet too
 
 DATASET = "checkout_v2"  # the same name in every block
 SESSION = "workshop_session"  # the session from block 03
@@ -22,6 +27,7 @@ QUESTION = "When is PAY-104 due?"
 
 
 async def main() -> None:
+    wait_note("feedback", "one to two minutes")
     # 1. What is in the session so far?
     entries = await cognee.session.get_session(session_id=SESSION)
     print(f"[feedback] The session holds {len(entries)} question(s):")
@@ -56,8 +62,8 @@ async def main() -> None:
     )
     print(f"\n[improve] Q: {QUESTION}")
     print(f"[improve] A: {results[0].text if results else '(nothing found)'}")
-    print("\n[improve] To see what changed in the graph, run block 02 again.")
-    print("[improve] Next: uv run python 05_permissions.py")
+    print("\n[improve] Optional: to see the change in the graph, run step 2 again (uv run python 02_graph.py).")
+    print("Next: uv run python 05_permissions.py")
 
 
 asyncio.run(main())

@@ -19,6 +19,26 @@ warnings.simplefilter("ignore")  # and Python's warnings
 
 import cognee
 
+from workshop import box
+
+
+def wait_for_ui(url: str = "http://localhost:3000", seconds: int = 240) -> None:
+    """Return when the UI answers, or after a few minutes if it never does."""
+    import time
+    import urllib.error
+    import urllib.request
+
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))  # never through a proxy
+    end = time.time() + seconds
+    while time.time() < end:
+        try:
+            opener.open(url, timeout=5)
+            return
+        except urllib.error.HTTPError:
+            return  # the server answered, even if with an error page
+        except OSError:
+            time.sleep(2)
+
 
 def use_node_22() -> None:
     # Cognee 1.6.6 starts the UI with the newest Node.js it finds in nvm, and installs
@@ -63,10 +83,25 @@ async def main() -> None:
         await api
         raise SystemExit("[graph] The UI did not start. See the message above.")
 
-    print("[graph] Open http://localhost:3000 and click Sign in (the login is already filled in).")
-    print("[graph] Click Graph on the left, pick the dataset checkout_v2, then click Records.")
-    print("[graph] Look for: Omar Haddad -> Payments -> PAY-104 -> the Kestrel Bank deadline.")
-    print("[graph] Press Ctrl+C to stop, then run: uv run python 03_agent_session.py")
+    # 3. Wait until the UI really answers, so the link works when you click it.
+    print("[graph] Starting the UI. The first time takes a minute or two. Wait for the box below...")
+    await asyncio.to_thread(wait_for_ui)
+
+    box(
+        [
+            "The graph is ready.",
+            "",
+            "1. Open http://localhost:3000 in your browser.",
+            "2. Click Sign in (the login is already filled in).",
+            "3. Click Graph on the left, pick the dataset checkout_v2, click Records.",
+            "4. Look for: Omar Haddad -> Payments -> PAY-104 -> the Kestrel Bank deadline.",
+            "",
+            "Lines that start with [frontend] below are normal. Ignore them.",
+            "",
+            "WHEN YOU ARE DONE: click this terminal window and press Ctrl+C.",
+            "This step does not end by itself. You must stop it before step 3.",
+        ]
+    )
     try:
         await api  # runs until Ctrl+C
     except asyncio.CancelledError:
@@ -79,4 +114,9 @@ async def main() -> None:
             stop_ui_pid(pid)
 
 
-asyncio.run(main())
+try:
+    asyncio.run(main())
+except KeyboardInterrupt:
+    pass
+print("\n[graph] Stopped.")
+print("Next: uv run python 03_agent_session.py")

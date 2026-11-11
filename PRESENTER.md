@@ -5,7 +5,7 @@ For the person who runs the session. Participants follow `README.md`.
 ## The day before
 
 1. Run steps 0 to 6 once on your own laptop, in order. All of it, including BAND.
-2. Create your two BAND agents (README step 6.1) and put the four values in `.env`.
+2. Run `uv run python 06_band.py` once to the end. It saves your two BAND agents and installs what step 6 needs.
 3. Run step 2 once before the session. The first run downloads the UI, and Node.js 22 if you don't have it.
 4. Ask participants to do **Step 0** before they arrive. The install is the slow part.
 
@@ -32,6 +32,10 @@ The three moments to slow down for: step 3 (one answer from three sources), step
 memory corrects itself), step 6.8 (agent B knows what agent A was told).
 
 ## Step 6, in order (you need three terminals)
+
+Participants run one command in one window: `uv run python 06_band.py`. It guides them and
+switches agent A off for them. You can present with that too. The table below is the same
+step by hand, if you want to show the three programs.
 
 | Terminal | Command | Wait for |
 |---|---|---|
