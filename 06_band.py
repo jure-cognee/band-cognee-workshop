@@ -27,6 +27,11 @@ RUNS = HERE / "runs"
 BAND_NAMES = ["BAND_AGENT_A_ID", "BAND_AGENT_A_API_KEY", "BAND_AGENT_B_ID", "BAND_AGENT_B_API_KEY"]
 SERVER = "http://localhost:8000"
 
+# What you paste into BAND. Each one is a single line, so it is easy to copy.
+QUESTION_A = "what are the next steps from the Checkout v2 launch readiness call? Give owner, team, due date and Linear issue for each."
+NEW_FACT = "new fact for the team: Lena Fischer finished the first draft of the Checkout v2 launch announcement today. It is waiting for review by Omar Haddad."
+QUESTION_B = "is the Checkout v2 launch announcement written yet, and who has to review it?"
+
 children: dict[str, subprocess.Popen] = {}
 
 
@@ -68,14 +73,23 @@ def band_agents() -> None:
 
     box(
         [
-            "PART 1 of 3: make two agents in BAND. In your browser, once for each agent:",
+            "PART 1 of 3: make two agents in BAND. You make them yourself, in your browser.",
             "",
-            "1. Open https://app.band.ai and sign in (or click Create account).",
-            "2. Click Agents in the left menu, then Connect remote agent.",
-            "3. Agent name: Cognee Agent A   (the second time: Cognee Agent B)",
-            "   Description: Answers questions about the Checkout v2 project.",
-            "4. Click Connect Agent. BAND shows an ID and an API Key.",
-            "   The API key is shown only once. Copy it, come back here, paste it.",
+            "First: open https://app.band.ai and sign in (or click Create account).",
+            "",
+            "Then do this twice, once for agent A and once for agent B:",
+            "1. Click Agents in the left menu.",
+            "2. Click Connect remote agent (top right).",
+            "3. Agent name:   Cognee Agent A      (the second time: Cognee Agent B)",
+            "   Description:  Answers questions about the Checkout v2 project.",
+            "   Leave everything else as it is.",
+            "4. Click Connect Agent. BAND now shows an ID and an API Key.",
+            "5. Copy the ID, come back to this window, paste it, press Enter.",
+            "6. Copy the API Key, come back, paste it, press Enter.",
+            "   The API key is shown only once. If you lose it: open the agent's",
+            "   menu in BAND and choose Regenerate API key.",
+            "",
+            "Start with agent A now. This window is waiting for its ID.",
         ]
     )
     for letter in ["A", "B"]:
@@ -167,10 +181,28 @@ def stop_everything() -> None:
 
 
 def countdown(seconds: int, what: str) -> None:
-    for left in range(seconds, 0, -5):
-        print(f"\r[band] {what} {left:>2} seconds left...", end="", flush=True)
-        time.sleep(5)
-    print(f"\r[band] {what} done.{' ' * 20}")
+    """A progress bar, so the wait looks alive."""
+    width, spinner, start = 30, "|/-\\", time.time()
+    tick = 0
+    while True:
+        passed = time.time() - start
+        if passed >= seconds:
+            break
+        filled = int(width * passed / seconds)
+        bar = "#" * filled + "." * (width - filled)
+        left = int(seconds - passed) + 1
+        print(f"\r[band] {what} [{bar}] {spinner[tick % 4]} {left:>2}s ", end="", flush=True)
+        tick += 1
+        time.sleep(0.2)
+    print(f"\r[band] {what} [{'#' * width}] done.   ")
+
+
+def copy_this(text: str) -> None:
+    """A line to copy into BAND, on its own, so it is easy to select."""
+    print("    COPY THIS INTO BAND (after you typed @ and picked the agent):")
+    print()
+    print(f"    {text}")
+    print()
 
 
 # ---------- the step ----------
@@ -220,44 +252,57 @@ def main() -> None:
         [
             "PART 3 of 3: both agents are online. Now go to BAND (https://app.band.ai).",
             "",
-            "1. Click Rooms in the left menu, then New room (the +).",
-            "2. Select Cognee Agent A and click Create room.",
-            "3. In the message box type @ and pick Cognee Agent A. Then ask:",
+            "A. Open a room with agent A:",
+            "   1. Click Agents in the left menu.",
+            "   2. Click Cognee Agent A.",
+            "   3. Click Create room.",
             "",
-            "   what are the next steps from the Checkout v2 launch readiness call?",
-            "   Give owner, team, due date and Linear issue for each.",
-            "",
-            "   Agent A answers from the memory you built in steps 1 to 5.",
-            "",
-            "4. In the same room, type @, pick Cognee Agent A, and tell it something new:",
-            "",
-            "   new fact for the team: Lena Fischer finished the first draft of the",
-            "   Checkout v2 launch announcement today. It is waiting for review by",
-            "   Omar Haddad.",
-            "",
-            "   Wait until agent A confirms it. Then come back to this window.",
+            "B. Ask agent A a question:",
+            "   1. Click the message box. Type @ and pick Cognee Agent A.",
+            "      (An agent only answers messages that mention it with @.)",
+            "   2. Paste the question below and press Enter.",
         ]
     )
+    copy_this(QUESTION_A)
+    print("    Agent A answers from the memory you built in steps 1 to 5.\n")
+    input("[band] Press Enter here when agent A has answered... ")
+
+    box(
+        [
+            "C. Tell agent A something new, in the same room:",
+            "   1. Type @ and pick Cognee Agent A again.",
+            "   2. Paste the new fact below and press Enter.",
+            "   3. Wait until agent A confirms it (it says something like Noted).",
+        ]
+    )
+    copy_this(NEW_FACT)
     input("[band] Press Enter here when agent A has confirmed the new fact... ")
 
-    print("[band] Stopping agent A. When an agent stops, its room moves into the shared memory.")
+    print("\n[band] Switching agent A off. When an agent stops, its room moves into the shared memory.")
     stop_agent("agent_a", RUNS / "stop_agent_a")
-    countdown(60, "Cognee is building the graph.")
+    countdown(60, "Cognee is building the graph")
 
     box(
         [
             "Agent A is now OFF. Go back to BAND.",
             "",
-            "1. Click New room again. This time select Cognee Agent B. Create room.",
-            "2. Type @, pick Cognee Agent B, and ask:",
+            "D. Open a NEW room, this time with agent B:",
+            "   1. Click Agents in the left menu.",
+            "   2. Click Cognee Agent B.",
+            "   3. Click Create room.",
             "",
-            "   is the Checkout v2 launch announcement written yet, and who has to",
-            "   review it?",
+            "E. Ask agent B about the fact you gave to agent A:",
+            "   1. Type @ and pick Cognee Agent B.",
+            "   2. Paste the question below and press Enter.",
+        ]
+    )
+    copy_this(QUESTION_B)
+    box(
+        [
+            "Agent B was never in the first room, and agent A is switched off.",
+            "Agent B still knows, because both agents use the same Cognee memory.",
             "",
-            "Agent B was never in the first room, and agent A is not running.",
-            "Agent B knows, because both agents use the same Cognee memory.",
-            "",
-            "If agent B does not know yet, wait a minute and ask again in a new room.",
+            "If agent B does not know yet, wait a minute and ask again.",
         ]
     )
     input("[band] Press Enter here when you are done, to switch everything off... ")
@@ -267,7 +312,16 @@ try:
     main()
     print("[band] Stopping agent B and the Cognee server...")
     stop_agent("agent_b", RUNS / "stop_agent_b")
-    print("[band] All done. That was the last step.")
+    box(
+        [
+            "All done. Two agents shared one memory, and both are switched off now.",
+            "",
+            "One more thing to see: the fact you gave to agent A in BAND is now in the",
+            "graph. Open the graph again and search for Lena Fischer:",
+            "    uv run python 02_graph.py",
+        ]
+    )
+    print("Next (optional): uv run python 02_graph.py")
 except KeyboardInterrupt:
     print("\n[band] Stopped.")
 finally:

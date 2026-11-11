@@ -236,34 +236,48 @@ Run this one command, in the same terminal window you used for steps 1 to 5:
 uv run python 06_band.py
 ```
 
-It guides you through three parts. You never edit a file.
+Everything happens in that one window. It tells you where to click in BAND and gives you
+the text to paste. You never open or edit a file. It has three parts.
 
-**Part 1: make two agents in BAND.** It tells you where to click in
-https://app.band.ai, then asks you to paste the ID and the API key of each agent.
+**Part 1: you make two agents in BAND.** You do not have them yet. The terminal shows
+these steps and waits for you:
+
+1. Open https://app.band.ai and sign in (or click **Create account**).
+2. Click **Agents** in the left menu, then **Connect remote agent**.
+3. **Agent name**: `Cognee Agent A`. **Description**: `Answers questions about the
+   Checkout v2 project.` Leave everything else as it is. Click **Connect Agent**.
+4. BAND shows an **ID** and an **API Key**. Copy the ID, paste it into the terminal, press
+   Enter. Then do the same with the API key. The API key is shown only once.
+5. Do the same again for `Cognee Agent B`.
+
+When you are done, your Agents page in BAND looks like this:
 
 ![Two agents in BAND](images/06_band_agents.jpg)
 
 **Part 2: it starts everything.** The Cognee server and both agents start in the
-background. You wait until it says both agents are online. The first time takes a few
-minutes.
+background. Wait until it says both agents are ready. The first time takes a few minutes.
 
-**Part 3: you talk to the agents in BAND.** It shows you what to type:
+**Part 3: you talk to the agents in BAND.** The terminal shows each click and gives you
+the exact text to copy:
 
-1. Make a room with **Cognee Agent A** and ask it about the Checkout v2 call. It answers
-   from the memory you built, with the date you fixed in step 4.
+1. Open a room with agent A: **Agents**, then **Cognee Agent A**, then **Create room**.
+   Type `@`, pick **Cognee Agent A**, and paste the question. It answers from the memory
+   you built, with the date you fixed in step 4.
 
    ![Agent A answers from Cognee memory](images/06_band_room_a.jpg)
 
-2. Tell agent A a new fact, then press Enter in the terminal. Agent A is switched off,
-   and its room moves into the shared memory.
-3. Make a new room with **Cognee Agent B** and ask about that fact.
+2. In the same room, tell agent A a new fact. Then press Enter in the terminal. Agent A is
+   switched off, and its room moves into the shared memory. This takes one minute.
+3. Open a new room with agent B: **Agents**, then **Cognee Agent B**, then **Create
+   room**. Type `@`, pick **Cognee Agent B**, and paste the question about that fact.
 
    ![Agent B knows what agent A was told](images/06_band_room_b.jpg)
 
 **What to notice.** Agent B was never in the first room, and agent A is not even running.
 Agent B knows because both agents read and write the same Cognee memory.
 
-Press Enter one last time and everything is switched off.
+Press Enter one last time and everything is switched off. To see the new fact in the
+graph, run step 2 again and search for `Lena Fischer`.
 
 ### Step 6 by hand (optional)
 
