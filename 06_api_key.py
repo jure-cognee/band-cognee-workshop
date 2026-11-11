@@ -30,7 +30,7 @@ key = json.load(urllib.request.urlopen(request))["key"]
 
 # 3. Save it in .env, where the BAND agents read it.
 env = Path(__file__).parent / ".env"
-lines = [line for line in env.read_text().splitlines() if not line.startswith("COGNEE_API_KEY=")]
-env.write_text("\n".join(lines + [f"COGNEE_API_KEY={key}"]) + "\n")
+lines = [line for line in env.read_text(encoding="utf-8").splitlines() if not line.startswith("COGNEE_API_KEY=")]
+env.write_text("\n".join(lines + [f"COGNEE_API_KEY={key}"]) + "\n", encoding="utf-8")
 print("[api-key] Saved COGNEE_API_KEY in .env")
 print("[api-key] Next: uv run --env-file .env 06_band_agent.py a")

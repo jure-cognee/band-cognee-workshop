@@ -36,40 +36,38 @@ flowchart LR
 
 ## Step 0: Install
 
-You need these four things. Check each one before you go on.
+Have these ready:
 
-| You need | Check it | If it is missing |
-|---|---|---|
-| [uv](https://docs.astral.sh/uv/) | `uv --version` | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
-| Node.js 22 | `node --version` prints `v22...` | With [nvm](https://github.com/nvm-sh/nvm): `nvm install 22 && nvm use 22` |
-| An OpenAI API key | starts with `sk-` | https://platform.openai.com/api-keys |
-| macOS only: OpenSSL 3 | `brew list openssl@3` | `brew install openssl@3` |
+- [git](https://git-scm.com/downloads)
+- an OpenAI API key, from https://platform.openai.com/api-keys (it starts with `sk-`)
+- for step 2 only: [Node.js 22](https://nodejs.org/en/download). The setup tells you if it is missing.
+- for step 6 only: a free BAND account. You create it in step 6.
 
-For step 6 you also need a free BAND account. You create it in step 6.
+On Windows, use **PowerShell**, not Command Prompt (cmd).
 
 Get the code:
 
 ```bash
 git clone https://github.com/jure-cognee/band-cognee-workshop.git
 cd band-cognee-workshop
-cp .env.example .env
 ```
 
-Open the file `.env` in any editor. Put your OpenAI key after `LLM_API_KEY=`, on the same
-line, with no spaces:
+Run the setup. It installs what is missing, asks for your OpenAI key, installs Cognee and
+checks everything.
 
-```text
-LLM_API_KEY=sk-...your key...
+Windows (PowerShell):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File setup.ps1
 ```
 
-Install and check:
+macOS or Linux:
 
 ```bash
-uv sync
-uv run python 00_check.py
+bash setup.sh
 ```
 
-You should see:
+You should see at the end:
 
 ```text
 [check] Cognee 1.6.6
@@ -77,7 +75,10 @@ You should see:
 [check] OK: ready. Next: uv run python 01_ingest.py
 ```
 
-`uv sync` takes a few minutes the first time. Do it before the session starts.
+The first run takes a few minutes. Do it before the session starts. You can run the setup
+again at any time; it skips what is already done.
+
+**From here on, every command is the same on Windows, macOS and Linux.**
 
 ## Step 1: Give Cognee the data
 
@@ -394,16 +395,18 @@ ends or the agent stops it moves that room into the graph. It comes from
 
 | You see | Do this |
 |---|---|
-| `Could not find lbug C API shared library` (macOS) | `brew install openssl@3`, then `rm -rf .venv/lib/python3.12/site-packages/cognee/.cognee_system`, then step 1 again |
-| `no such table: principals` | The same `rm -rf` line, then step 1 again |
-| `This block needs Node.js 22 on your PATH` | `nvm install 22 && nvm use 22` in the same terminal, then step 2 again |
+| Windows: `running scripts is disabled on this system` | Run the setup with the exact line from step 0: `powershell -ExecutionPolicy Bypass -File setup.ps1` |
+| `uv` is not recognized, or `command not found: uv` | Close the terminal, open a new one, `cd` into the folder, and run the setup again |
+| `Could not find lbug C API shared library` (macOS) | `brew install openssl@3`, then `uv run python reset.py`, then step 1 again |
+| `no such table: principals` | `uv run python reset.py`, then step 1 again |
+| `This block needs Node.js 22 on your PATH` | Install Node.js 22 from https://nodejs.org/en/download (with nvm: `nvm install 22`, then `nvm use 22`). Open a new terminal, then step 2 again |
 | The page at localhost:3000 says "Internal Server Error" | The UI is running on Node 27. Stop it, check `node --version` says 22, run step 2 again |
 | Step 2 or 6.2: `Address already in use` | Something else uses port 8000 or 3000. Stop step 2 with Ctrl+C before step 6, and the other way round |
 | Step 6.4: `UnauthorizedError` | The BAND id or API key in `.env` is wrong. In BAND, open the agent's menu, choose **Regenerate API key**, and put the new key in `.env` |
 | Step 6.4: `KeyError: 'LLM_API_KEY'` or `'BAND_AGENT_A_ID'` | Start the agent with `uv run --env-file .env ...`, and check that line in `.env` |
 | The agent does not answer in the room | Your message must mention it. Type `@` and pick the agent from the list |
 | Agent B does not know the new fact | Wait a minute and ask again in a new room. Check that you stopped agent A with Ctrl+C |
-| You want to start over | Run step 1 again. It clears the dataset first |
+| You want to start over | Run step 1 again. It clears the dataset first. For a full reset: `uv run python reset.py` |
 
 ## Files
 
@@ -413,6 +416,8 @@ ends or the agent stops it moves that room into the graph. It comes from
 | `00_check.py` to `05_permissions.py` | Steps 0 to 5, one file each |
 | `06_server.py`, `06_api_key.py`, `06_band_agent.py` | Step 6 |
 | `06_check_memory.py` | Step 6 without BAND, to test the setup |
-| `run.sh` | `bash run.sh 03` runs a step and saves its output in `runs/` |
+| `setup.ps1`, `setup.sh` | Step 0 in one command, for Windows and for macOS or Linux |
+| `reset.py` | Deletes Cognee's local databases, to start over |
+| `run.sh` | macOS or Linux: `bash run.sh 03` runs a step and saves its output in `runs/` |
 | `PRESENTER.md` | Script and timing for the person who runs the session |
 | `BAND_NOTES.md` | What BAND is and how its parts work, from BAND's docs |

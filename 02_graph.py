@@ -32,7 +32,8 @@ def use_node_22() -> None:
     if not version.startswith("v22."):
         raise SystemExit(
             f"[graph] This block needs Node.js 22 on your PATH (found: {version}).\n"
-            "[graph] With nvm: nvm install 22 && nvm use 22. Then run this block again."
+            "[graph] Install it from https://nodejs.org/en/download (pick v22), or with nvm: nvm install 22, then nvm use 22.\n"
+            "[graph] Open a new terminal, then run this block again."
         )
     ui.get_nvm_sh_path = lambda: Path("no-nvm")  # Cognee now runs the "npm" from your PATH
 

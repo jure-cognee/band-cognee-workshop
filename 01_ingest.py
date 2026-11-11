@@ -42,7 +42,7 @@ async def main() -> None:
 
     # One remember() call per source. remember() stores the text and builds the graph.
     for source in ["calls", "linear", "email"]:
-        texts = [path.read_text() for path in sorted((DATA / source).glob("*.txt"))]
+        texts = [path.read_text(encoding="utf-8") for path in sorted((DATA / source).glob("*.txt"))]
         await cognee.remember(
             texts,
             dataset_name=DATASET,
