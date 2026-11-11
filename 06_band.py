@@ -80,8 +80,7 @@ def band_agents() -> None:
             "Then do this twice, once for agent A and once for agent B:",
             "1. Click Agents in the left menu.",
             "2. Click Connect remote agent (top right).",
-            "3. Agent name:   Cognee Agent A      (the second time: Cognee Agent B)",
-            "   Description:  Answers questions about the Checkout v2 project.",
+            "3. Fill in the name and the description (copy them from below).",
             "   Leave everything else as it is.",
             "4. Click Connect Agent. BAND now shows an ID and an API Key.",
             "5. Copy the ID, come back to this window, paste it, press Enter.",
@@ -92,6 +91,12 @@ def band_agents() -> None:
             "Start with agent A now. This window is waiting for its ID.",
         ]
     )
+    print("    AGENT A   name:         Cognee Agent A")
+    print("              description:  Workshop agent A. Answers questions about the Checkout v2 project from shared Cognee memory.")
+    print()
+    print("    AGENT B   name:         Cognee Agent B")
+    print("              description:  Workshop agent B. Answers questions about the Checkout v2 project from shared Cognee memory.")
+    print()
     for letter in ["A", "B"]:
         print(f"[band] Cognee Agent {letter}")
         save(f"BAND_AGENT_{letter}_ID", ask(f"ID of Cognee Agent {letter}"))
@@ -144,6 +149,20 @@ def wait_until(name: str, log: Path, ready, seconds: int, what: str) -> None:
     fail(f"{name} was not ready after {seconds} seconds.", log)
 
 
+def wait_for_optional(name: str, ready, seconds: int, what: str) -> bool:
+    """Like wait_until, but if it fails the step goes on without this program."""
+    print(f"[band] {what}", end="", flush=True)
+    end = time.time() + seconds
+    while time.time() < end and children[name].poll() is None:
+        if ready():
+            print(" ready.")
+            return True
+        print(".", end="", flush=True)
+        time.sleep(2)
+    print(" not available. Going on without it.")
+    return False
+
+
 def server_answers() -> bool:
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))  # never through a proxy
     try:
@@ -168,6 +187,14 @@ def stop_agent(name: str, stop_file: Path) -> None:
 
 
 def stop_everything() -> None:
+    # The graph UI first, the clean way, so it does not leave a program on port 3000.
+    ui = children.get("graph_ui")
+    if ui and ui.poll() is None:
+        (RUNS / "stop_ui").write_text("stop", encoding="utf-8")
+        try:
+            ui.wait(timeout=30)
+        except subprocess.TimeoutExpired:
+            pass
     for name, process in children.items():
         if process.poll() is None:
             process.terminate()
@@ -178,6 +205,7 @@ def stop_everything() -> None:
             process.kill()
     for letter in "ab":
         (RUNS / f"stop_agent_{letter}").unlink(missing_ok=True)
+    (RUNS / "stop_ui").unlink(missing_ok=True)
 
 
 def countdown(seconds: int, what: str) -> None:
@@ -248,6 +276,16 @@ def main() -> None:
             f"Starting agent {letter.upper()} (the first time it installs a few things)",
         )
 
+    # The graph UI, so you can look at the memory between the BAND steps. If it does not
+    # start, the step goes on without it.
+    ui_stop = RUNS / "stop_ui"
+    ui_stop.unlink(missing_ok=True)
+    ui_log = start("graph_ui", [sys.executable, "02_graph.py"], {"GRAPH_UI_STOP_FILE": str(ui_stop)})
+    has_ui = wait_for_optional(
+        "graph_ui", lambda: "[graph] UI ready" in ui_log.read_text(encoding="utf-8", errors="replace"), 240,
+        "Starting the graph view",
+    )
+
     box(
         [
             "PART 3 of 3: both agents are online. Now go to BAND (https://app.band.ai).",
@@ -282,6 +320,23 @@ def main() -> None:
     stop_agent("agent_a", RUNS / "stop_agent_a")
     countdown(60, "Cognee is building the graph")
 
+    if has_ui:
+        box(
+            [
+                "LOOK AT THE GRAPH. What you told agent A in BAND is now in the memory.",
+                "",
+                "1. Open http://localhost:3000 in your browser.",
+                "2. Click Sign in (the login is already filled in).",
+                "3. Click Graph on the left and pick the dataset checkout_v2.",
+                "   (The page title says Mindmap. That is Cognee's name for the graph.)",
+                "4. Type Lena in the search box and pick lena fischer.",
+                "   Follow her lines to the launch announcement and to Omar Haddad.",
+                "",
+                "Nobody added that to the graph by hand. It came from the BAND room.",
+            ]
+        )
+        input("[band] Press Enter here when you have seen it... ")
+
     box(
         [
             "Agent A is now OFF. Go back to BAND.",
@@ -314,14 +369,12 @@ try:
     stop_agent("agent_b", RUNS / "stop_agent_b")
     box(
         [
-            "All done. Two agents shared one memory, and both are switched off now.",
+            "All done. Two agents shared one memory, and everything is switched off now.",
             "",
-            "One more thing to see: the fact you gave to agent A in BAND is now in the",
-            "graph. Open the graph again and search for Lena Fischer:",
+            "To look at the graph again at any time:",
             "    uv run python 02_graph.py",
         ]
     )
-    print("Next (optional): uv run python 02_graph.py")
 except KeyboardInterrupt:
     print("\n[band] Stopped.")
 finally:

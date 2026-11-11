@@ -53,6 +53,31 @@ def use_node_22() -> None:
     ui.get_nvm_sh_path = lambda: Path("no-nvm")  # Cognee now runs the "npm" from your PATH
 
 
+async def ui_only(stop_file: str) -> None:
+    """Start only the UI, for 06_band.py, which already runs the Cognee server.
+
+    Runs until the stop file appears, then stops the UI the clean way.
+    """
+    use_node_22()
+    from cognee.api.v1.ui.ui import remove_ui_container, stop_ui_pid
+
+    started: list = []
+    try:
+        ui = await asyncio.to_thread(cognee.start_ui, started.append, auto_download=True)
+        if ui is None:
+            raise SystemExit("[graph] The UI did not start.")
+        await asyncio.to_thread(wait_for_ui)
+        print("[graph] UI ready", flush=True)
+        while not os.path.exists(stop_file):
+            await asyncio.sleep(1)
+    finally:
+        for item in started:
+            pid, container = item if isinstance(item, tuple) else (item, None)
+            if container:
+                remove_ui_container(container)
+            stop_ui_pid(pid)
+
+
 async def main() -> None:
     import uvicorn
 
@@ -94,6 +119,7 @@ async def main() -> None:
             "1. Open http://localhost:3000 in your browser.",
             "2. Click Sign in (the login is already filled in).",
             "3. Click Graph on the left, pick the dataset checkout_v2, click Records.",
+            "   (The page title says Mindmap. That is Cognee's name for the graph.)",
             "4. Look for: Omar Haddad -> Payments -> PAY-104 -> the Kestrel Bank deadline.",
             "",
             "Lines that start with [frontend] below are normal. Ignore them.",
@@ -113,6 +139,13 @@ async def main() -> None:
                 remove_ui_container(container)
             stop_ui_pid(pid)
 
+
+if os.environ.get("GRAPH_UI_STOP_FILE"):  # started by 06_band.py
+    try:
+        asyncio.run(ui_only(os.environ["GRAPH_UI_STOP_FILE"]))
+    except KeyboardInterrupt:
+        pass
+    raise SystemExit(0)
 
 try:
     asyncio.run(main())

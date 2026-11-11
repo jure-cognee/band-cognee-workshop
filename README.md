@@ -127,7 +127,7 @@ The first run downloads the UI, so it takes a minute or two. Wait for the box th
    ![The sign-in page, already filled in](images/02_sign_in.jpg)
 
 3. Click **Graph** in the left menu. Pick the dataset `checkout_v2`. At the bottom, click
-   **Records**.
+   **Records**. The page title says **Mindmap**: that is Cognee's name for the graph view.
 
    ![The graph of the Checkout v2 data](images/02_graph.jpg)
 
@@ -244,11 +244,16 @@ these steps and waits for you:
 
 1. Open https://app.band.ai and sign in (or click **Create account**).
 2. Click **Agents** in the left menu, then **Connect remote agent**.
-3. **Agent name**: `Cognee Agent A`. **Description**: `Answers questions about the
-   Checkout v2 project.` Leave everything else as it is. Click **Connect Agent**.
+3. Fill in the name and the description from the table below. Leave everything else as
+   it is. Click **Connect Agent**.
 4. BAND shows an **ID** and an **API Key**. Copy the ID, paste it into the terminal, press
    Enter. Then do the same with the API key. The API key is shown only once.
-5. Do the same again for `Cognee Agent B`.
+5. Do the same again for agent B.
+
+| | Agent name | Description |
+|---|---|---|
+| Agent A | `Cognee Agent A` | `Workshop agent A. Answers questions about the Checkout v2 project from shared Cognee memory.` |
+| Agent B | `Cognee Agent B` | `Workshop agent B. Answers questions about the Checkout v2 project from shared Cognee memory.` |
 
 When you are done, your Agents page in BAND looks like this:
 
@@ -268,7 +273,9 @@ the exact text to copy:
 
 2. In the same room, tell agent A a new fact. Then press Enter in the terminal. Agent A is
    switched off, and its room moves into the shared memory. This takes one minute.
-3. Open a new room with agent B: **Agents**, then **Cognee Agent B**, then **Create
+3. Look at the graph at http://localhost:3000 and search for `Lena`. The fact you gave
+   to agent A in BAND is now in the graph, linked to Lena Fischer and Omar Haddad.
+4. Open a new room with agent B: **Agents**, then **Cognee Agent B**, then **Create
    room**. Type `@`, pick **Cognee Agent B**, and paste the question about that fact.
 
    ![Agent B knows what agent A was told](images/06_band_room_b.jpg)
@@ -276,8 +283,7 @@ the exact text to copy:
 **What to notice.** Agent B was never in the first room, and agent A is not even running.
 Agent B knows because both agents read and write the same Cognee memory.
 
-Press Enter one last time and everything is switched off. To see the new fact in the
-graph, run step 2 again and search for `Lena Fischer`.
+Press Enter one last time and everything is switched off.
 
 ### Step 6 by hand (optional)
 
