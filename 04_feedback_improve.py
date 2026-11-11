@@ -12,7 +12,7 @@ import cognee
 import litellm
 from cognee import SearchType
 
-from workshop import wait_note
+from workshop import aha, mark, wait_note
 
 litellm.suppress_debug_info = True  # keep the LLM library quiet too
 
@@ -38,6 +38,7 @@ async def main() -> None:
 
     # 2. Rate the last answer (1 = bad, 5 = good) and say why.
     last = entries[-1]
+    before = (getattr(last, "answer", "") or "").strip()
     await cognee.session.add_feedback(
         session_id=SESSION,
         qa_id=last.qa_id,
@@ -60,10 +61,28 @@ async def main() -> None:
     results = await cognee.recall(
         QUESTION, query_type=SearchType.HYBRID_COMPLETION, datasets=[DATASET]
     )
+    after = results[0].text if results else "(nothing found)"
     print(f"\n[improve] Q: {QUESTION}")
-    print(f"[improve] A: {results[0].text if results else '(nothing found)'}")
-    print("\n[improve] Optional: to see the change in the graph, run step 2 again (uv run python 02_graph.py).")
-    print("Next: uv run python 05_permissions.py")
+    print(f"[improve] A: {after}")
+
+    aha(
+        [
+            f"The question: {QUESTION}",
+            "",
+            f"BEFORE (the answer in the session, from step 3): {before or '(see step 3)'}",
+            "",
+            "You rated that answer 1 out of 5 and added the new fact to the session.",
+            "Then improve() moved what the session learned into the graph.",
+            "",
+            f"AFTER (asked again, in a new session): {after}",
+            "",
+            "Nobody edited the graph by hand. The memory corrected itself from feedback.",
+        ],
+        title="WHAT IMPROVED",
+    )
+    mark(4)
+    print("[improve] Now look at it in the graph. The graph step shows you where to look.")
+    print("Next: uv run python 02_graph.py")
 
 
 asyncio.run(main())

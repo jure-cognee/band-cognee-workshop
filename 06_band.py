@@ -19,7 +19,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from workshop import box
+from workshop import box, mark
 
 HERE = Path(__file__).parent.resolve()
 ENV = HERE / ".env"
@@ -323,7 +323,10 @@ def main() -> None:
     if has_ui:
         box(
             [
-                "LOOK AT THE GRAPH. What you told agent A in BAND is now in the memory.",
+                "LOOK AT THE GRAPH. The BAND room is now inside Cognee.",
+                "",
+                "You typed one sentence into a chat room in BAND. Agent A stopped,",
+                "and Cognee turned that room into graph memory. See it yourself:",
                 "",
                 "1. Open http://localhost:3000 in your browser.",
                 "2. Click Sign in (the login is already filled in).",
@@ -331,6 +334,8 @@ def main() -> None:
                 "   (The page title says Mindmap. That is Cognee's name for the graph.)",
                 "4. Type Lena in the search box and pick lena fischer.",
                 "   Follow her lines to the launch announcement and to Omar Haddad.",
+                "",
+                "   On the left, under SOURCES, user sessions now also holds the BAND room.",
                 "",
                 "Nobody added that to the graph by hand. It came from the BAND room.",
             ]
@@ -354,8 +359,11 @@ def main() -> None:
     copy_this(QUESTION_B)
     box(
         [
+            "WHAT TO NOTICE",
+            "",
             "Agent B was never in the first room, and agent A is switched off.",
             "Agent B still knows, because both agents use the same Cognee memory.",
+            "Without Cognee, a BAND agent forgets everything when its room ends.",
             "",
             "If agent B does not know yet, wait a minute and ask again.",
         ]
@@ -367,6 +375,7 @@ try:
     main()
     print("[band] Stopping agent B and the Cognee server...")
     stop_agent("agent_b", RUNS / "stop_agent_b")
+    mark(6)
     box(
         [
             "All done. Two agents shared one memory, and everything is switched off now.",

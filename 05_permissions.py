@@ -18,7 +18,7 @@ from cognee.modules.users.permissions.methods import (
     authorized_revoke_permission_on_datasets,
 )
 
-from workshop import wait_note
+from workshop import aha, mark, wait_note
 
 litellm.suppress_debug_info = True  # keep the LLM library quiet too
 
@@ -62,7 +62,17 @@ async def main() -> None:
     print(f"\n[permissions] {agent_b.email} asks again: {QUESTION}")
     await ask(agent_b, dataset.id)
 
-    print("\n[permissions] Done. The last step connects two BAND agents to this memory.")
+    aha(
+        [
+            "The same user asked the same question twice. The data did not change.",
+            "The first time Cognee refused. The second time it answered.",
+            "The only difference is one line: the owner gave that user read permission.",
+            "",
+            "So a memory is shared only with the users and agents you allow, dataset by dataset.",
+        ]
+    )
+    mark(5)
+    print("[permissions] Done. The last step connects two BAND agents to this memory.")
     print("Next: uv run python 06_band.py")
 
 

@@ -31,6 +31,25 @@ For the person who runs the session. Participants follow `README.md`.
 The three moments to slow down for: step 3 (one answer from three sources), step 4 (the
 memory corrects itself), step 6.8 (agent B knows what agent A was told).
 
+## The aha moments, and one sentence for each
+
+Every step ends with a short box, **WHAT JUST HAPPENED**. Stop there and say the sentence.
+Keep it calm. The result is the point, not the words.
+
+| When | What they see | Say |
+|---|---|---|
+| Step 2, the graph | Omar linked to his team, PAY-104, the bank and its deadline | "Five text files went in. Nobody drew these lines. Cognee linked a call, a Linear issue and an email from the text." |
+| Step 3, the answer | Owner, team, issue and due date for each next step | "Open the call transcript: it never says Payments, PAY-104 or a date. The answer has all three, because the graph joins the sources." |
+| Step 3, the session | The box says the questions are now a session | "That conversation is a session, the agent's short-term memory. The graph has not changed yet." |
+| Step 4, WHAT IMPROVED | The old date, then the new date | "One bad rating and one new fact. improve() moved it into the graph. The memory corrected itself." |
+| Step 4, back in the graph | PAY-104 with the new date, and the source 'user sessions' | "This part of the graph did not exist ten minutes ago. It came from the session." |
+| Step 5, permissions | No access, then an answer | "Same user, same question, same data. One permission changed. You decide who shares a memory." |
+| Step 6, LOOK AT THE GRAPH | Lena Fischer linked to the launch announcement | "I typed that sentence into a BAND chat room. Now it is in Cognee's graph. The room became memory." |
+| Step 6, agent B | Agent B answers about the announcement | "Agent B was never in that room, and agent A is switched off. They share one memory." |
+
+If you have time for only three: step 3 (the answer), step 4 (WHAT IMPROVED) and step 6
+(agent B).
+
 ## Step 6, in order (you need three terminals)
 
 Participants run one command in one window: `uv run python 06_band.py`. It guides them and

@@ -14,7 +14,7 @@ os.environ.setdefault("LOG_LEVEL", "ERROR")  # keep Cognee's logs quiet
 import cognee
 from cognee.modules.engine.operations.setup import setup
 
-from workshop import wait_note
+from workshop import mark, wait_note
 
 DATASET = "checkout_v2"  # the same name in every block
 DATA = Path(__file__).parent / "data"
@@ -58,7 +58,8 @@ async def main() -> None:
         )
         print(f"[ingest] Remembered {len(texts)} file(s) from data/{source}/")
 
-    print("[ingest] Done.")
+    mark(1)
+    print("[ingest] Done. Cognee stored the text and built a knowledge graph from it.")
     print("Next: uv run python 02_graph.py")
 
 

@@ -30,3 +30,30 @@ def new_terminal(command: str) -> list[str]:
         else "Open a NEW terminal window."
     )
     return [opener, "Paste these two lines there:", f'    cd "{FOLDER}"', f"    {command}"]
+
+
+def aha(lines: list[str], title: str = "WHAT JUST HAPPENED") -> None:
+    """The short note after a step that says why it matters. Long lines are wrapped."""
+    import textwrap
+
+    wrapped: list[str] = []
+    for line in lines:
+        wrapped += textwrap.wrap(line, 76, subsequent_indent="  ") or [""]
+    box([title, ""] + wrapped)
+
+
+def mark(step: int) -> None:
+    """Remember the last step that finished, so step 2 (the graph) knows what to point at."""
+    try:
+        runs = FOLDER / "runs"
+        runs.mkdir(exist_ok=True)
+        (runs / "progress.txt").write_text(str(step), encoding="utf-8")
+    except OSError:
+        pass  # never stop a step because of this
+
+
+def last_step() -> int:
+    try:
+        return int((FOLDER / "runs" / "progress.txt").read_text(encoding="utf-8").strip())
+    except (OSError, ValueError):
+        return 0

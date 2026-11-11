@@ -164,7 +164,9 @@ because the graph links the call to the older call, to Linear and to the bank's 
 await cognee.recall(question, datasets=["checkout_v2"], session_id="workshop_session")
 ```
 
-`session_id` keeps the questions and answers together as one session.
+`session_id` keeps the questions and answers together as one session. A session is the
+agent's short-term memory. It lives next to the graph, not in it: after this step the
+graph has not changed yet. Step 4 changes that.
 
 ## Step 4: Feedback, then improve
 
@@ -194,7 +196,11 @@ await cognee.remember(NEW_FACT, dataset_name=DATASET, session_id=SESSION)
 await cognee.improve(DATASET, session_ids=[SESSION])
 ```
 
-To see the change in the graph, run step 2 again.
+The step ends with a box, **WHAT IMPROVED**, that shows the answer before and after.
+Then it sends you back to the graph (`uv run python 02_graph.py`). This time the graph
+step points at what changed: PAY-104 now links to the new date, and under **SOURCES**
+there is a new source, **user sessions**. That is what the graph learned from the session.
+Stop the graph with **Ctrl+C** as before.
 
 ## Step 5: Permissions
 

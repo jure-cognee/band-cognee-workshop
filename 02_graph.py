@@ -19,7 +19,7 @@ warnings.simplefilter("ignore")  # and Python's warnings
 
 import cognee
 
-from workshop import box
+from workshop import aha, box, last_step
 
 
 def wait_for_ui(url: str = "http://localhost:3000", seconds: int = 240) -> None:
@@ -112,6 +112,18 @@ async def main() -> None:
     print("[graph] Starting the UI. The first time takes a minute or two. Wait for the box below...")
     await asyncio.to_thread(wait_for_ui)
 
+    if last_step() >= 4:  # you are back here after feedback and improve
+        look = [
+            "4. Type PAY-104 in the search box and open it. Follow its lines:",
+            "   the deadline is now 2027-01-15, the date from your feedback.",
+            "5. On the left, under SOURCES, there is a new one: user sessions.",
+            "   That is what the graph learned from the session. Click it.",
+        ]
+    else:
+        look = [
+            "4. Type Omar in the search box and pick omar haddad. Follow his lines:",
+            "   the Payments team, the issue PAY-104, the bank and its deadline.",
+        ]
     box(
         [
             "The graph is ready.",
@@ -120,12 +132,14 @@ async def main() -> None:
             "2. Click Sign in (the login is already filled in).",
             "3. Click Graph on the left, pick the dataset checkout_v2, click Records.",
             "   (The page title says Mindmap. That is Cognee's name for the graph.)",
-            "4. Look for: Omar Haddad -> Payments -> PAY-104 -> the Kestrel Bank deadline.",
+        ]
+        + look
+        + [
             "",
             "Lines that start with [frontend] below are normal. Ignore them.",
             "",
             "WHEN YOU ARE DONE: click this terminal window and press Ctrl+C.",
-            "This step does not end by itself. You must stop it before step 3.",
+            "This step does not end by itself. You must stop it before the next step.",
         ]
     )
     try:
@@ -152,4 +166,28 @@ try:
 except KeyboardInterrupt:
     pass
 print("\n[graph] Stopped.")
-print("Next: uv run python 03_agent_session.py")
+done = last_step()
+if done >= 4:
+    aha(
+        [
+            "The graph changed, and nobody edited it. The new deadline and the 'user sessions' "
+            "source came from the session: one bad rating and one new fact.",
+        ]
+    )
+else:
+    aha(
+        [
+            "Five plain text files became one connected graph.",
+            "Omar's team comes from an old call, PAY-104 from Linear, the deadline from an email. "
+            "Nobody linked them by hand. Cognee did, from the text.",
+        ]
+    )
+NEXT = {
+    3: "uv run python 04_feedback_improve.py",
+    4: "uv run python 05_permissions.py",
+    5: "uv run python 06_band.py",
+}
+if done >= 6:
+    print("[graph] You have finished the workshop. Run step 1 again to start over.")
+else:
+    print("Next: " + NEXT.get(done, "uv run python 03_agent_session.py"))
