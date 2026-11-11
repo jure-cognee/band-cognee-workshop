@@ -5,13 +5,12 @@ Then open http://localhost:3000, click "Sign in", click "Graph", pick the datase
 "checkout_v2" and click "Records".
 Press Ctrl+C to stop before you run the next block.
 
-Needs Node.js 22 on your PATH. The first run downloads the UI, so it takes a little longer.
+Needs Node.js 22. If you don't have it, this block downloads it into the folder .node/
+(for this workshop only). The first run also downloads the UI, so it takes a little longer.
 """
 
 import asyncio
 import os
-import shutil
-import subprocess
 import warnings
 from pathlib import Path
 
@@ -24,17 +23,13 @@ import cognee
 def use_node_22() -> None:
     # Cognee 1.6.6 starts the UI with the newest Node.js it finds in nvm, and installs
     # the newest Node.js if "node" is not on your PATH. The UI fails on Node 27
-    # ("Internal Server Error"). So: need Node 22 on the PATH, and keep Cognee out of nvm.
+    # ("Internal Server Error"). So: put a Node 22 on the PATH (node22.py downloads one
+    # into .node/ if you don't have it), and keep Cognee out of nvm.
     from cognee.api.v1.ui import ui
 
-    node = shutil.which("node")
-    version = subprocess.run([node, "--version"], capture_output=True, text=True).stdout.strip() if node else "none"
-    if not version.startswith("v22."):
-        raise SystemExit(
-            f"[graph] This block needs Node.js 22 on your PATH (found: {version}).\n"
-            "[graph] Install it from https://nodejs.org/en/download (pick v22), or with nvm: nvm install 22, then nvm use 22.\n"
-            "[graph] Open a new terminal, then run this block again."
-        )
+    from node22 import ensure_node_22
+
+    print(f"[graph] Using Node.js {ensure_node_22()}")
     ui.get_nvm_sh_path = lambda: Path("no-nvm")  # Cognee now runs the "npm" from your PATH
 
 

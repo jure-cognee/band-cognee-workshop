@@ -47,20 +47,16 @@ if (-not $current -or $current -eq "LLM_API_KEY=") {
     Say "LLM_API_KEY is already in .env"
 }
 
-# 4. Node.js 22 (only step 2, the graph UI, needs it)
-$node = Get-Command node -ErrorAction SilentlyContinue
-$nodeVersion = if ($node) { (node --version) } else { "none" }
-if ($nodeVersion -like "v22.*") {
-    Say "Node.js: $nodeVersion"
-} else {
-    Write-Host "[setup] Node.js 22 not found (found: $nodeVersion). Steps 0, 1 and 3 to 6 work without it." -ForegroundColor Yellow
-    Write-Host "[setup] For step 2 (the graph UI), install Node.js 22 from https://nodejs.org/en/download (pick v22)." -ForegroundColor Yellow
-}
-
-# 5. Install and check
+# 4. Install and check
 Say "Installing Python and Cognee. The first time takes a few minutes..."
 uv sync
 if ($LASTEXITCODE -ne 0) { Fail "uv sync failed. Send the error above to the presenter." }
+
+# 5. Node.js 22 for step 2 (the graph UI). Downloaded into .node if you don't have it.
+uv run python node22.py
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "[setup] Step 2 (the graph UI) will not work until this is fixed. All other steps work." -ForegroundColor Yellow
+}
 
 uv run python 00_check.py
 if ($LASTEXITCODE -ne 0) { Fail "The check failed. See the message above." }

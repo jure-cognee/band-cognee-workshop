@@ -42,8 +42,14 @@ fi
 if grep -q '^LLM_API_KEY=$' .env; then
   key="${LLM_API_KEY:-}"
   if [ -z "$key" ]; then
-    [ -t 0 ] || fail "Put your OpenAI key in .env after LLM_API_KEY=, then run this script again."
-    read -r -p "[setup] Paste your OpenAI API key (starts with sk-): " key
+    # Read from the terminal, so this also works when the script is piped in (curl ... | bash).
+    if [ -t 0 ]; then
+      read -r -p "[setup] Paste your OpenAI API key (starts with sk-): " key
+    elif { : < /dev/tty; } 2>/dev/null; then
+      read -r -p "[setup] Paste your OpenAI API key (starts with sk-): " key < /dev/tty
+    else
+      fail "Put your OpenAI key in .env after LLM_API_KEY=, then run this script again."
+    fi
   fi
   key="$(echo "$key" | tr -d '[:space:]')"
   case "$key" in sk-*) ;; *) fail "That doesn't look like an OpenAI key. Run the script again." ;; esac
@@ -54,15 +60,11 @@ else
   say "LLM_API_KEY is already in .env"
 fi
 
-# 5. Node.js 22 (only step 2, the graph UI, needs it)
-node_version="$(node --version 2>/dev/null || echo none)"
-case "$node_version" in
-  v22.*) say "Node.js: $node_version" ;;
-  *) echo "[setup] Node.js 22 not found (found: $node_version). Steps 0, 1 and 3 to 6 work without it." >&2
-     echo "[setup] For step 2 (the graph UI): nvm install 22 && nvm use 22, or https://nodejs.org/en/download" >&2 ;;
-esac
-
-# 6. Install and check
+# 5. Install and check
 say "Installing Python and Cognee. The first time takes a few minutes..."
 uv sync || fail "uv sync failed. Send the error above to the presenter."
+
+# 6. Node.js 22 for step 2 (the graph UI). Downloaded into .node if you don't have it.
+uv run python node22.py || echo "[setup] Step 2 (the graph UI) will not work until this is fixed. All other steps work." >&2
+
 uv run python 00_check.py

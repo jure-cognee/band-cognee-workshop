@@ -5,12 +5,23 @@ two BAND agents to it. At the end, one agent knows what the other one was told.
 
 ## Before the session (10 minutes)
 
-1. Get the code: https://github.com/jure-cognee/band-cognee-workshop
-2. Open `README.md` in the repo and do **Step 0: Install**. The install takes a few minutes.
-3. Have these ready:
-   - an OpenAI API key
-   - Node.js 22
-   - a free BAND account at https://app.band.ai (needed for the last step)
+1. Get an OpenAI API key: https://platform.openai.com/api-keys
+2. Open a terminal and paste one line. It downloads the workshop and installs everything.
+   You do not need to install anything first.
+
+   Windows (PowerShell):
+
+   ```powershell
+   irm https://raw.githubusercontent.com/jure-cognee/band-cognee-workshop/main/install.ps1 | iex
+   ```
+
+   macOS or Linux:
+
+   ```bash
+   curl -LsSf https://raw.githubusercontent.com/jure-cognee/band-cognee-workshop/main/install.sh | bash
+   ```
+
+3. Make a free BAND account at https://app.band.ai (needed for the last step).
 
 ## In the session (30 minutes)
 

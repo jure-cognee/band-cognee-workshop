@@ -36,38 +36,29 @@ flowchart LR
 
 ## Step 0: Install
 
-Have these ready:
+You need two things:
 
-- [git](https://git-scm.com/downloads)
 - an OpenAI API key, from https://platform.openai.com/api-keys (it starts with `sk-`)
-- for step 2 only: [Node.js 22](https://nodejs.org/en/download). The setup tells you if it is missing.
 - for step 6 only: a free BAND account. You create it in step 6.
 
-On Windows, use **PowerShell**, not Command Prompt (cmd).
+You do not need to install anything first. Open a terminal and paste **one line**.
 
-Get the code:
-
-```bash
-git clone https://github.com/jure-cognee/band-cognee-workshop.git
-cd band-cognee-workshop
-```
-
-Run the setup. It installs what is missing, asks for your OpenAI key, installs Cognee and
-checks everything.
-
-Windows (PowerShell):
+**Windows.** Open **PowerShell** (press the Windows key, type `powershell`, press Enter).
+Do not use Command Prompt (cmd). Paste this and press Enter:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File setup.ps1
+irm https://raw.githubusercontent.com/jure-cognee/band-cognee-workshop/main/install.ps1 | iex
 ```
 
-macOS or Linux:
+**macOS or Linux.** Open Terminal. Paste this and press Enter:
 
 ```bash
-bash setup.sh
+curl -LsSf https://raw.githubusercontent.com/jure-cognee/band-cognee-workshop/main/install.sh | bash
 ```
 
-You should see at the end:
+It asks for one thing, your OpenAI key. Paste it and press Enter. Then it downloads the
+workshop into a folder called `band-cognee-workshop`, installs everything inside that
+folder, and checks it. Wait for these lines:
 
 ```text
 [check] Cognee 1.6.6
@@ -75,8 +66,11 @@ You should see at the end:
 [check] OK: ready. Next: uv run python 01_ingest.py
 ```
 
-The first run takes a few minutes. Do it before the session starts. You can run the setup
-again at any time; it skips what is already done.
+Then follow the last lines it prints. On Windows you are already in the workshop folder.
+On macOS or Linux, run the `cd band-cognee-workshop` line it shows you.
+
+The first run takes a few minutes. Do it before the session starts. If something goes
+wrong, or you come back later, paste the same line again: it is safe to run many times.
 
 **From here on, every command is the same on Windows, macOS and Linux.**
 
@@ -395,12 +389,13 @@ ends or the agent stops it moves that room into the graph. It comes from
 
 | You see | Do this |
 |---|---|
-| Windows: `running scripts is disabled on this system` | Run the setup with the exact line from step 0: `powershell -ExecutionPolicy Bypass -File setup.ps1` |
-| `uv` is not recognized, or `command not found: uv` | Close the terminal, open a new one, `cd` into the folder, and run the setup again |
+| Anything fails in step 0 | Paste the one line from step 0 again. It continues where it stopped |
+| `uv` is not recognized, or `command not found: uv` | Close the terminal, open a new one, and paste the one line from step 0 again |
+| You are not in the workshop folder (`can't open file`, `No such file`) | `cd band-cognee-workshop`, then run the command again |
 | `Could not find lbug C API shared library` (macOS) | `brew install openssl@3`, then `uv run python reset.py`, then step 1 again |
 | `no such table: principals` | `uv run python reset.py`, then step 1 again |
-| `This block needs Node.js 22 on your PATH` | Install Node.js 22 from https://nodejs.org/en/download (with nvm: `nvm install 22`, then `nvm use 22`). Open a new terminal, then step 2 again |
-| The page at localhost:3000 says "Internal Server Error" | The UI is running on Node 27. Stop it, check `node --version` says 22, run step 2 again |
+| `Could not download Node.js 22` | Check your internet connection and run step 2 again. Or install Node.js 22 from https://nodejs.org/en/download, open a new terminal, then step 2 again |
+| The page at localhost:3000 says "Internal Server Error" | The UI is running on the wrong Node.js. Stop it with Ctrl+C and run step 2 again |
 | Step 2 or 6.2: `Address already in use` | Something else uses port 8000 or 3000. Stop step 2 with Ctrl+C before step 6, and the other way round |
 | Step 6.4: `UnauthorizedError` | The BAND id or API key in `.env` is wrong. In BAND, open the agent's menu, choose **Regenerate API key**, and put the new key in `.env` |
 | Step 6.4: `KeyError: 'LLM_API_KEY'` or `'BAND_AGENT_A_ID'` | Start the agent with `uv run --env-file .env ...`, and check that line in `.env` |
@@ -416,7 +411,9 @@ ends or the agent stops it moves that room into the graph. It comes from
 | `00_check.py` to `05_permissions.py` | Steps 0 to 5, one file each |
 | `06_server.py`, `06_api_key.py`, `06_band_agent.py` | Step 6 |
 | `06_check_memory.py` | Step 6 without BAND, to test the setup |
-| `setup.ps1`, `setup.sh` | Step 0 in one command, for Windows and for macOS or Linux |
+| `install.ps1`, `install.sh` | Step 0 in one line: get the workshop and run the setup |
+| `setup.ps1`, `setup.sh` | The setup itself. The installer runs it for you |
+| `node22.py` | Gets Node.js 22 for step 2 if you don't have it, into the folder `.node/` |
 | `reset.py` | Deletes Cognee's local databases, to start over |
 | `run.sh` | macOS or Linux: `bash run.sh 03` runs a step and saves its output in `runs/` |
 | `PRESENTER.md` | Script and timing for the person who runs the session |

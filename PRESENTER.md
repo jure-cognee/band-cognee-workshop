@@ -6,7 +6,7 @@ For the person who runs the session. Participants follow `README.md`.
 
 1. Run steps 0 to 6 once on your own laptop, in order. All of it, including BAND.
 2. Create your two BAND agents (README step 6.1) and put the four values in `.env`.
-3. Check that `node --version` says 22 in the terminal you will use for step 2.
+3. Run step 2 once before the session. The first run downloads the UI, and Node.js 22 if you don't have it.
 4. Ask participants to do **Step 0** before they arrive. The install is the slow part.
 
 ## Ten minutes before

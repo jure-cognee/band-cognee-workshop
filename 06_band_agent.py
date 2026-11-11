@@ -2,7 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #   "band-sdk[pydantic_ai]>=6.0.1",
-#   "cognee-integration-band @ git+https://github.com/topoteretes/cognee-integrations#subdirectory=integrations/band",
+#   "cognee-integration-band @ https://github.com/topoteretes/cognee-integrations/archive/refs/heads/main.zip#subdirectory=integrations/band",
 # ]
 # ///
 """Block 06, step 2: a BAND agent that uses the Cognee memory from blocks 01-05.

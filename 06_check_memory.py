@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#   "cognee-integration-band @ git+https://github.com/topoteretes/cognee-integrations#subdirectory=integrations/band",
+#   "cognee-integration-band @ https://github.com/topoteretes/cognee-integrations/archive/refs/heads/main.zip#subdirectory=integrations/band",
 # ]
 # ///
 """Block 06, check: the memory path the BAND agents use, without BAND.
